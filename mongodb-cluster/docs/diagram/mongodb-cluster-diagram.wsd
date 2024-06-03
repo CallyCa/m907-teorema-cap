@@ -1,0 +1,116 @@
+@startuml
+!define NodeColor lightblue
+skinparam rectangle {
+  BackgroundColor<<Node>> NodeColor
+}
+
+rectangle "Docker Compose Environment" {
+  node "Config Server 1" as CS1 <<Node>> {
+    rectangle "MongoDB Config" {
+      [mongod.conf] as MC1
+      database "data" as DCS1
+    }
+  }
+  node "Config Server 2" as CS2 <<Node>> {
+    rectangle "MongoDB Config" {
+      [mongod.conf] as MC2
+      database "data" as DCS2
+    }
+  }
+  node "Config Server 3" as CS3 <<Node>> {
+    rectangle "MongoDB Config" {
+      [mongod.conf] as MC3
+      database "data" as DCS3
+    }
+  }
+
+  CS1 .right.> CS2 : Replica Sync
+  CS2 .right.> CS3 : Replica Sync
+  CS3 .right.> CS1 : Replica Sync
+
+  node "Shard 1" as Shard1 <<Node>> {
+    node "Replica 1" as S1R1 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS1R1
+        database "data" as DS1R1
+      }
+    }
+    node "Replica 2" as S1R2 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS1R2
+        database "data" as DS1R2
+      }
+    }
+    node "Replica 3" as S1R3 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS1R3
+        database "data" as DS1R3
+      }
+    }
+
+    S1R1 .down.> S1R2 : Data Sync
+    S1R2 .down.> S1R3 : Data Sync
+    S1R3 .down.> S1R1 : Data Sync
+  }
+
+  node "Shard 2" as Shard2 <<Node>> {
+    node "Replica 1" as S2R1 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS2R1
+        database "data" as DS2R1
+      }
+    }
+    node "Replica 2" as S2R2 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS2R2
+        database "data" as DS2R2
+      }
+    }
+    node "Replica 3" as S2R3 <<Node>> {
+      rectangle "MongoDB Shard" {
+        [mongod.conf] as MS2R3
+        database "data" as DS2R3
+      }
+    }
+
+    S2R1 .down.> S2R2 : Data Sync
+    S2R2 .down.> S2R3 : Data Sync
+    S2R3 .down.> S2R1 : Data Sync
+  }
+
+  node "Mongos 1" as Mongos1 <<Node>> {
+    rectangle "MongoDB Router" {
+      [mongos.conf] as MG1
+    }
+  }
+  node "Mongos 2" as Mongos2 <<Node>> {
+    rectangle "MongoDB Router" {
+      [mongos.conf] as MG2
+    }
+  }
+
+  Mongos1 .right.> Mongos2 : Config Sync
+
+  cloud {
+    [Client Application] as Client
+  }
+
+  Client -down-> Mongos1 : Writes/Reads
+  Client -down-> Mongos2 : Writes/Reads
+}
+
+CS1 -down-> Shard1 : Shard Config
+CS2 -down-> Shard1 : Shard Config
+CS3 -down-> Shard1 : Shard Config
+
+CS1 -down-> Shard2 : Shard Config
+CS2 -down-> Shard2 : Shard Config
+CS3 -down-> Shard2 : Shard Config
+
+Mongos1 -down-> Shard1 : Queries
+Mongos1 -down-> Shard2 : Queries
+
+Mongos2 -down-> Shard1 : Queries
+Mongos2 -down-> Shard2 : Queries
+
+@enduml

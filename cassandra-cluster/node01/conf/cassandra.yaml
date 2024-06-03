@@ -1,14 +1,14 @@
 cluster_name: TestCluster
 num_tokens: 256
 seed_provider:
-    - class_name: org.apache.cassandra.locator.SimpleSeedProvider
-      parameters:
-          - seeds: "cassandra_node01,cassandra_node02,cassandra_node03"
+  - class_name: org.apache.cassandra.locator.SimpleSeedProvider
+    parameters:
+      - seeds: "cassandra_node01,cassandra_node02,cassandra_node03"
 
-listen_address: 172.16.238.3
+listen_address: 172.16.238.4
 rpc_address: 0.0.0.0
-broadcast_address: 172.16.238.3
-broadcast_rpc_address: 172.16.238.3
+broadcast_address: 172.16.238.4
+broadcast_rpc_address: 172.16.238.4
 endpoint_snitch: GossipingPropertyFileSnitch
 start_native_transport: true
 native_transport_port: 9042

@@ -1,1 +1,0 @@
-Armazena os resultados das execuções do YCSB

@@ -4,7 +4,9 @@ FROM cassandra:latest
 # Define variáveis de ambiente para a configuração do Cassandra
 ENV CASSANDRA_CLUSTER_NAME=TestCluster \
     CASSANDRA_SEEDS=cassandra_node01,cassandra_node02,cassandra_node03 \
-    CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+    CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch \
+    CASSANDRA_AUTHENTICATOR=PasswordAuthenticator \
+    CASSANDRA_AUTHORIZER=CassandraAuthorizer
 
 # Copia os arquivos de configuração e scripts necessários para o contêiner
 COPY ./common/cql/init_cassandra.py /etc/cassandra/init_cassandra.py
