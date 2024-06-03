@@ -138,6 +138,7 @@ cassandra-cluster/ycsb/results/*.dat
 cassandra-cluster/ycsb/results/*.txt
 cassandra-cluster/ycsb/results/*.json
 mongodb-cluster/ycsb/results/*.dat
+mongodb-cluster/ycsb/results/*.txt
 mongodb-cluster/ycsb/results/*.json
 
 
@@ -147,6 +148,12 @@ cassandra-cluster/node02/data/*
 cassandra-cluster/node03/data/*
 
 # MongoDB Cluster Data Logs
-mongodb-cluster/node01/data/*
-mongodb-cluster/node02/data/*
-mongodb-cluster/node03/data/*
+mongodb-cluster/config1/data/*
+mongodb-cluster/config2/data/*
+mongodb-cluster/config3/data/*
+mongodb-cluster/shard1-1/data/*
+mongodb-cluster/shard1-2/data/*
+mongodb-cluster/shard1-3/data/*
+mongodb-cluster/shard2-1/data/*
+mongodb-cluster/shard2-2/data/*
+mongodb-cluster/shard2-3/data/*

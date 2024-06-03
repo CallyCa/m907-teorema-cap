@@ -1,17 +1,43 @@
-from cassandra.cluster import Cluster
+import logging
+import time
+import configparser
+from cassandra.cluster import Cluster, DCAwareRoundRobinPolicy, ExecutionProfile, EXEC_PROFILE_DEFAULT
 from cassandra.auth import PlainTextAuthProvider
 
-def connect_to_cassandra():
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+credentials_path = "/etc/cassandra/cassandra.credentials"
+
+def load_credentials(file_path):
+    config = configparser.ConfigParser()
+    config.read(file_path)
+    username = config.get('authentication', 'username')
+    password = config.get('authentication', 'password')
+    return username, password
+
+def connect_to_cassandra(username, password):
     # Configurações de autenticação
-    auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+    auth_provider = PlainTextAuthProvider(username=username, password=password)
+
+    # Criação do perfil de execução com especificação do datacenter local
+    execution_profile = ExecutionProfile(load_balancing_policy=DCAwareRoundRobinPolicy(local_dc='dc1'))
 
     # Conexão com o cluster Cassandra
-    cluster = Cluster(['cassandra_node01', 'cassandra_node02', 'cassandra_node03'], auth_provider=auth_provider)
+    cluster = Cluster(
+        ['cassandra_node01', 'cassandra_node02', 'cassandra_node03'],
+        auth_provider=auth_provider,
+        protocol_version=5,
+        execution_profiles={EXEC_PROFILE_DEFAULT: execution_profile}
+    )
 
     # Conecta-se a uma sessão
-    session = cluster.connect()
-
-    return session
+    try:
+        session = cluster.connect()
+        return session
+    except Exception as e:
+        logger.error(f"Erro ao conectar ao Cassandra: {e}")
+        raise
 
 def create_keyspace_and_table(session):
     # Criação do keyspace e da tabela se não existirem
@@ -45,28 +71,29 @@ def create_users_and_grant_permissions(session):
     
     # Verifica se o keyspace existe antes de conceder permissões
     if 'ycsb_keypace_node' not in session.cluster.metadata.keyspaces:
-        print("Keyspace 'ycsb_keypace_node' não foi criado corretamente.")
+        logger.error("Keyspace 'ycsb_keypace_node' não foi criado corretamente.")
         return
     
     # Concede permissões específicas para appuser no keyspace criado
     try:
         session.execute("GRANT SELECT ON KEYSPACE ycsb_keypace_node TO appuser")
-        session.execute("GRANT INSERT ON KEYSPACE ycsb_keypace_node TO appuser")
-        session.execute("GRANT UPDATE ON KEYSPACE ycsb_keypace_node TO appuser")
-        session.execute("GRANT DELETE ON KEYSPACE ycsb_keypace_node TO appuser")
+        session.execute("GRANT MODIFY ON KEYSPACE ycsb_keypace_node TO appuser")
     except Exception as e:
-        print("Error granting permissions:", e)
+        logger.error(f"Erro ao conceder permissões: {e}")
 
     # Concede permissões gerais de leitura em todos os keyspaces
     try:
         session.execute("GRANT SELECT ON ALL KEYSPACES TO appuser")
     except Exception as e:
-        print("Error granting general permissions:", e)
-
+        logger.error(f"Erro ao conceder permissões gerais: {e}")
 
 def main():
+    # Carregar credenciais do arquivo
+    username, password = load_credentials(credentials_path)
+
     # Conectar-se ao cluster Cassandra
-    session = connect_to_cassandra()
+    time.sleep(25)  # Aumentar o tempo de espera
+    session = connect_to_cassandra(username, password)
 
     # Criar o keyspace e a tabela
     create_keyspace_and_table(session)

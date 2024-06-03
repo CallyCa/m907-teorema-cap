@@ -1,9 +1,9 @@
 cluster_name: TestCluster
 num_tokens: 256
 seed_provider:
-    - class_name: org.apache.cassandra.locator.SimpleSeedProvider
-      parameters:
-          - seeds: "cassandra_node01,cassandra_node02,cassandra_node03"
+  - class_name: org.apache.cassandra.locator.SimpleSeedProvider
+    parameters:
+      - seeds: "cassandra_node01,cassandra_node02,cassandra_node03"
 
 listen_address: 172.16.238.2
 rpc_address: 0.0.0.0

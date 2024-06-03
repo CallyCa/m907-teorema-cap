@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  init_cassandra:
-    build:
-      context: ./common/cql
-      dockerfile: Dockerfile
-    depends_on:
-      - node01
-      - node02
-      - node03
-    networks:
-      - cassandra_net
-
   node01:
     build:
       context: .
@@ -117,9 +106,9 @@ services:
       - ./common/credentials/cassandra.credentials:/etc/cassandra/cassandra.credentials
       - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
       - ./ycsb/replica01.properties:/app/ycsb-0.18.0/replica.properties
-      - ./ycsb/results:/results
+      - ./ycsb/results:/app/ycsb-0.18.0/results
       - ./ycsb/script/network_failures.py:/app/ycsb-0.18.0/network_failures.py
-      - ./ycsb/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+      - ./ycsb/script/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
 
   benchmark02:
     image: ybsc:0.18.0
@@ -144,9 +133,22 @@ services:
       - ./common/credentials/cassandra.credentials:/etc/cassandra/cassandra.credentials
       - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
       - ./ycsb/replica02.properties:/app/ycsb-0.18.0/replica.properties
-      - ./ycsb/results:/results
+      - ./ycsb/results:/app/ycsb-0.18.0/results
       - ./ycsb/script/network_failures.py:/app/ycsb-0.18.0/network_failures.py
-      - ./ycsb/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+      - ./ycsb/script/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+
+  init_cassandra:
+    build:
+      context: ./common/
+      dockerfile: Dockerfile
+    depends_on:
+      - node01
+      - node02
+      - node03
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - cassandra_net
 
   benchmark03:
     image: ybsc:0.18.0
@@ -171,9 +173,9 @@ services:
       - ./common/credentials/cassandra.credentials:/etc/cassandra/cassandra.credentials
       - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
       - ./ycsb/replica03.properties:/app/ycsb-0.18.0/replica.properties
-      - ./ycsb/results:/results
+      - ./ycsb/results:/app/ycsb-0.18.0/results
       - ./ycsb/script/network_failures.py:/app/ycsb-0.18.0/network_failures.py
-      - ./ycsb/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+      - ./ycsb/script/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
 
 networks:
   cassandra_net:

@@ -1,0 +1,399 @@
+version: "3.8"
+
+services:
+  configsvr1:
+    image: mongo:latest
+    container_name: configsvr1
+    command: ["mongod", "--config", "/data/configdb/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config1/data:/data/configdb
+      - ./common/config/configsvr1/mongod.conf:/data/configdb/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27001:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  configsvr2:
+    image: mongo:latest
+    container_name: configsvr2
+    command: ["mongod", "--config", "/data/configdb/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config2/data:/data/configdb
+      - ./common/config/configsvr2/mongod.conf:/data/configdb/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27002:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  configsvr3:
+    image: mongo:latest
+    container_name: configsvr3
+    command: ["mongod", "--config", "/data/configdb/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config3/data:/data/configdb
+      - ./common/config/configsvr3/mongod.conf:/data/configdb/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27003:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard1-1:
+    image: mongo:latest
+    container_name: mongo-shard1-1
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard1-1/data:/data/db
+      - ./common/config/shard1/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27101:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard1-2:
+    image: mongo:latest
+    container_name: mongo-shard1-2
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard1-2/data:/data/db
+      - ./common/config/shard1/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27102:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard1-3:
+    image: mongo:latest
+    container_name: mongo-shard1-3
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard1-3/data:/data/db
+      - ./common/config/shard1/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27103:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard2-1:
+    image: mongo:latest
+    container_name: mongo-shard2-1
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard2-1/data:/data/db
+      - ./common/config/shard2/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27201:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard2-2:
+    image: mongo:latest
+    container_name: mongo-shard2-2
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard2-2/data:/data/db
+      - ./common/config/shard2/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27202:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-shard2-3:
+    image: mongo:latest
+    container_name: mongo-shard2-3
+    command: ["mongod", "--config", "/data/db/mongod.conf"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./shard2-3/data:/data/db
+      - ./common/config/shard2/mongod.conf:/data/db/mongod.conf
+    networks:
+      - mongodb-network
+    ports:
+      - 27203:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongos1:
+    image: mongo:latest
+    container_name: mongos1
+    depends_on:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+    command:
+      [
+        "mongos",
+        "--configdb",
+        "rs-config/configsvr1:27017,configsvr2:27017,configsvr3:27017",
+        "--bind_ip_all",
+      ]
+    networks:
+      - mongodb-network
+    ports:
+      - 27017:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongos2:
+    image: mongo:latest
+    container_name: mongos2
+    depends_on:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+    command:
+      [
+        "mongos",
+        "--configdb",
+        "rs-config/configsvr1:27017,configsvr2:27017,configsvr3:27017",
+        "--bind_ip_all",
+      ]
+    networks:
+      - mongodb-network
+    ports:
+      - 27200:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  benchmark01:
+    image: ycsb:0.18.0
+    build: ./ycsb/
+    depends_on:
+      - mongos1
+      - mongos2
+    networks:
+      - mongodb-network
+    environment:
+      - MONGO_HOSTS=mongos1,mongos2
+      - MONGO_PORTS=27017,27200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
+      - ./ycsb/replica01.properties:/app/ycsb-0.18.0/replica.properties
+      - ./ycsb/scripts/network_failures.py:/app/ycsb-0.18.0/scripts/network_failures.py
+      - ./ycsb/results:/app/ycsb-0.18.0/results
+      - ./ycsb/scripts/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+
+  benchmark02:
+    image: ycsb:0.18.0
+    build: ./ycsb/
+    depends_on:
+      - mongos1
+      - mongos2
+    networks:
+      - mongodb-network
+    environment:
+      - MONGO_HOSTS=mongos1,mongos2
+      - MONGO_PORTS=27017,27200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
+      - ./ycsb/replica02.properties:/app/ycsb-0.18.0/replica.properties
+      - ./ycsb/scripts/network_failures.py:/app/ycsb-0.18.0/scripts/network_failures.py
+      - ./ycsb/results:/app/ycsb-0.18.0/results
+      - ./ycsb/scripts/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+
+  benchmark03:
+    image: ycsb:0.18.0
+    build: ./ycsb/
+    depends_on:
+      - mongos1
+      - mongos2
+    networks:
+      - mongodb-network
+    environment:
+      - MONGO_HOSTS=mongos1,mongos2
+      - MONGO_PORTS=27017,27200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ycsb/db.properties:/app/ycsb-0.18.0/db.properties
+      - ./ycsb/replica03.properties:/app/ycsb-0.18.0/replica.properties
+      - ./ycsb/scripts/network_failures.py:/app/ycsb-0.18.0/scripts/network_failures.py
+      - ./ycsb/results:/app/ycsb-0.18.0/results
+      - ./ycsb/scripts/convert_to_json.py:/app/ycsb-0.18.0/convert_to_json.py
+
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+
+networks:
+  mongodb-network:
+    driver: bridge

@@ -21,7 +21,9 @@ RUN mkdir -p lib && \
     curl -O --location https://repo1.maven.org/maven2/com/datastax/oss/java-driver-core/4.9.0/java-driver-core-4.9.0.jar --output lib/
 
 # Copy the network_failures script
+COPY script/convert_to_json.py /app/ycsb-${VERSION}/script/convert_to_json.py
 COPY script/network_failures.py /app/ycsb-${VERSION}/script/network_failures.py
+COPY results/ /app/ycsb-${VERSION}/results
 
 COPY entrypoint.sh ./bin/
 
